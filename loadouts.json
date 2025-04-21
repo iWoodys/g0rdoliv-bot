@@ -1,0 +1,26 @@
+{
+    "CR-56 AMAX": {
+        "title": "CR-56 AMAX (AR)",
+        "attachments": {
+            "Optic": "VOLZHKIV REFLEX",
+            "Muzzle": "COMPENSATOR",
+            "Barrel": "GAIN-TWIST BARREL",
+            "Underbarrel": "VERTICAL FOREGRIP",
+            "Magazine": "EXTENDED MAG II"
+        },
+        "image": "https://i.imgur.com/EZKWfuB.png",
+        "timestamp": "3/4/25, 12:46 p.m."
+    },
+    "KSV": {
+        "title": "KSV",
+        "attachments": {
+            "Rear Grip": "GRIP ERGONOMIC",
+            "Muzzle": "COMPENSATOR",
+            "Barrel": "GAIN-TWIST BARREL",
+            "Underbarrel": "RANGER FOREGRIP",
+            "Magazine": "EXTENDED MAG II"
+        },
+        "image": "https://i.imgur.com/6mnnRk7.png",
+        "timestamp": "21/04/25, 06:47 PM"
+    }
+}
