@@ -27,7 +27,7 @@ class LoadoutView(View):
         guild_loadouts = loadouts.get(guild_id, {})
 
         for weapon in guild_loadouts.keys():
-            self.add_item(WeaponButton(label=weapon, user_id=user_id))
+            self.add_item(WeaponButton(label=weapon, user_id=user_id, guild_id=guild_id))  # ← cambio aplicado
 
     async def interaction_check(self, interaction: Interaction) -> bool:
         return interaction.user.id == self.user_id

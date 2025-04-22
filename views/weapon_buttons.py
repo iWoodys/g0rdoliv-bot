@@ -3,12 +3,13 @@ from discord import ButtonStyle, Interaction
 from views.loadout_embed import generate_weapon_embed
 
 class WeaponButton(Button):
-    def __init__(self, label, user_id):
+    def __init__(self, label, user_id, guild_id):
         super().__init__(label=label, style=ButtonStyle.primary)
         self.user_id = user_id
+        self.guild_id = guild_id
 
     async def callback(self, interaction: Interaction):
-        # Eliminamos la restricción para que todos los usuarios puedan ver el loadout
-        embed = generate_weapon_embed(self.label)
+        embed = generate_weapon_embed(self.guild_id, self.label)
         await interaction.response.send_message(embed=embed, ephemeral=False)
+
 

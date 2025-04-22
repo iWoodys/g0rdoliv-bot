@@ -5,8 +5,9 @@ def load_loadouts():
     with open("loadouts.json", "r") as f:
         return json.load(f)
 
-def generate_weapon_embed(weapon_name: str) -> Embed:
-    data = load_loadouts()[weapon_name]
+def generate_weapon_embed(guild_id: str, weapon_name: str) -> Embed:
+    loadouts = load_loadouts()
+    data = loadouts[guild_id][weapon_name]
 
     embed = Embed(
         title=data["title"],
@@ -20,3 +21,4 @@ def generate_weapon_embed(weapon_name: str) -> Embed:
     embed.set_footer(text=data["timestamp"])
 
     return embed
+
