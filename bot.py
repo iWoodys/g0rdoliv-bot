@@ -24,6 +24,11 @@ async def on_ready():
     activity = discord.Activity(type=discord.ActivityType.watching, name="2.941.013 players in Warzone")
     await bot.change_presence(status=discord.Status.online, activity=activity)
 
+    # Mostrar lista de servidores en consola
+    print("📜 Servidores donde está el bot:")
+    for guild in bot.guilds:
+        print(f"👉 {guild.name} (ID: {guild.id})")
+
     # Verificar y salirse de servidores no deseados
     for guild in bot.guilds:
         if guild.id in IGNORED_GUILDS:
@@ -41,5 +46,3 @@ async def main():
     await bot.start(config.TOKEN)
 
 asyncio.run(main())
-
-
