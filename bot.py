@@ -7,12 +7,25 @@ import asyncio
 # Inicia el servidor Flask apenas arranca el bot
 keep_alive()
 
+# Lista de IDs de servidores a ignorar (cuando quieras, ponelos acá)
+IGNORED_GUILDS = [
+    # 123456789012345678,  # Ejemplo de servidor 1
+    # 234567890123456789   # Ejemplo de servidor 2
+]
+
 intents = discord.Intents.default()
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 @bot.event
 async def on_ready():
     print(f"✅ Bot conectado como {bot.user}")
+
+    # Verificar y salirse de servidores no deseados
+    for guild in bot.guilds:
+        if guild.id in IGNORED_GUILDS:
+            print(f"🚪 Saliendo del servidor: {guild.name}")
+            await guild.leave()
+
     try:
         synced = await bot.tree.sync()
         print(f"🌐 Comandos sincronizados: {len(synced)}")
@@ -24,4 +37,5 @@ async def main():
     await bot.start(config.TOKEN)
 
 asyncio.run(main())
+
 
