@@ -20,6 +20,10 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 async def on_ready():
     print(f"✅ Bot conectado como {bot.user}")
 
+    # Establecer status personalizado
+    activity = discord.Activity(type=discord.ActivityType.watching, name="2.941.013 players in Warzone")
+    await bot.change_presence(status=discord.Status.online, activity=activity)
+
     # Verificar y salirse de servidores no deseados
     for guild in bot.guilds:
         if guild.id in IGNORED_GUILDS:
