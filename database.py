@@ -7,10 +7,12 @@ from firebase_admin import credentials, firestore
 cred_data = os.environ.get("FIREBASE_CREDENTIALS")
 
 if cred_data:
+    print("Credenciales obtenidas correctamente.")
     cred_dict = json.loads(cred_data)
     cred = credentials.Certificate(cred_dict)
     firebase_admin.initialize_app(cred)
 else:
+    print("No se han encontrado credenciales.")
     raise ValueError("Las credenciales de Firebase no están disponibles en las variables de entorno.")
 
 db = firestore.client()
