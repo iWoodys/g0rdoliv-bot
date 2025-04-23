@@ -8,8 +8,10 @@ class WeaponButton(Button):
         self.user_id = user_id
         self.guild_id = guild_id
 
-    async def callback(self, interaction: Interaction):
+async def callback(self, interaction: Interaction):
+    try:
         embed = generate_weapon_embed(self.guild_id, self.label)
         await interaction.response.send_message(embed=embed, ephemeral=False)
-
+    except Exception as e:
+        await interaction.response.send_message("❌ Este botón ya no es válido. Probá usar el comando de nuevo.", ephemeral=True)
 
