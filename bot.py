@@ -28,6 +28,15 @@ bot = commands.Bot(
 async def on_ready():
     print(f"✅ Bot conectado como {bot.user}")
 
+    # Sincroniza los comandos para asegurarse de que estén disponibles
+    try:
+        synced = await bot.tree.sync()
+        print(f"🌐 Comandos slash sincronizados: {len(synced)}")
+        for cmd in synced:
+            print(f"🔹 /{cmd.name}")
+    except Exception as e:
+        print(f"❌ Error al sincronizar comandos: {e}")
+
     activity = discord.Activity(type=discord.ActivityType.watching, name="2.941.013 players in Warzone")
     await bot.change_presence(status=discord.Status.online, activity=activity)
 
@@ -40,14 +49,6 @@ async def on_ready():
         if guild.id in IGNORED_GUILDS:
             print(f"🚪 Saliendo del servidor: {guild.name}")
             await guild.leave()
-
-    try:
-        synced = await bot.tree.sync()
-        print(f"🌐 Comandos slash sincronizados: {len(synced)}")
-        for cmd in synced:
-            print(f"🔹 /{cmd.name}")
-    except Exception as e:
-        print(f"❌ Error al sincronizar comandos: {e}")
 
 # 🕵️ Comando clásico oculto: !cerrar (solo para OWNER_ID)
 @bot.command(name="cerrar")
@@ -71,16 +72,19 @@ async def cerrar(ctx):
     embed.set_footer(text="Gracias por usar Warzone Loadouts Stream")
 
     try:
-        await ctx.send(embed=embed)
-        print(f"📨 Embed enviado en {ctx.channel.name}")
+        # Asegúrate de que ctx.channel esté disponible
+        if ctx.channel:
+            await ctx.send(embed=embed)
+        else:
+            print("⚠️ Error: El canal no está disponible para enviar el embed.")
     except Exception as e:
-        print(f"⚠️ Error al enviar embed: {e}")
+        print(f"⚠️ Error al enviar el mensaje embed: {e}")
 
     await ctx.guild.leave()
 
 async def main():
     await bot.load_extension("cogs.warzone")
-    # await bot.load_extension("cogs.hidden_commands")  # solo si tenés otros cogs secretos
+    await bot.load_extension("cogs.hidden_commands")  # Descomentada para cargar el cog de comandos ocultos
     await bot.start(config.TOKEN)
 
 asyncio.run(main())
