@@ -18,13 +18,7 @@ class LoadoutView(View):
 
 class Warzone(commands.Cog):
     def __init__(self, bot):
-        self.bot = bot
-
-        # Vincular comandos al árbol
-        self.bot.tree.add_command(self.warzone)
-        self.bot.tree.add_command(self.add_loadout)
-        self.bot.tree.add_command(self.edit_loadout)
-        self.bot.tree.add_command(self.delete_loadout)
+        self.bot = bot  # Ya no registramos comandos manualmente
 
     @app_commands.command(name="warzone", description="Mostrar las armas de Warzone")
     async def warzone(self, interaction: Interaction):
