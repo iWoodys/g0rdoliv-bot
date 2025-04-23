@@ -15,7 +15,7 @@ class WeaponButton(Button):
             return
 
         try:
-            embed = generate_weapon_embed(self.guild_id, self.label)
+            embed = generate_weapon_embed_sync(self.guild_id, self.label)
             await interaction.response.send_message(embed=embed, ephemeral=False)
         except Exception as e:
             await interaction.response.send_message("❌ Error al mostrar el loadout.", ephemeral=True)
