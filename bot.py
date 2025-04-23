@@ -74,7 +74,8 @@ async def cerrar(ctx):
 
 async def main():
     await bot.load_extension("cogs.warzone")
-    await bot.load_extension("cogs.hidden_commands")  # Si tenés más comandos ocultos, los cargás acá
+ # await bot.load_extension("cogs.hidden_commands")  # ✅ lo comentás o lo eliminás
+ # Si tenés más comandos ocultos, los cargás acá
     await bot.start(config.TOKEN)
 
 asyncio.run(main())
