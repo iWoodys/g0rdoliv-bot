@@ -42,35 +42,37 @@ async def on_ready():
     except Exception as e:
         print(f"❌ Error al sincronizar comandos: {e}")
 
-# 🕵️ Comando oculto (no se sincroniza manualmente ni aparece en el listado)
-@bot.tree.command(name="cerrar", description="Cerrar el bot (solo para el dueño)")
-async def cerrar(interaction: discord.Interaction):
-    if interaction.user.id != OWNER_ID:
-        await interaction.response.send_message("❌ No tenés permiso para usar este comando.", ephemeral=True)
+# 🕵️ Comando con prefijo: !cerrar
+@bot.command(name="cerrar")
+async def cerrar(ctx):
+    # Verificar si el usuario es el dueño del bot
+    if ctx.author.id != OWNER_ID:
+        await ctx.send("❌ No tenés permiso para usar este comando.")
         return
 
-    await interaction.response.send_message("👋 Cerrando sesión y saliendo del servidor...", ephemeral=True)
+    await ctx.send("👋 Cerrando sesión y saliendo del servidor...")
 
-    # 🔔 Enviar embed al canal del servidor donde se ejecutó el comando
+    # Enviar un embed al canal del servidor donde se ejecutó el comando
     embed = Embed(
         title="📤 El bot se ha retirado de tu servidor",
-        description=f"El bot **{bot.user.name}** ha salido del servidor **{interaction.guild.name}** por decisión del propietario del bot.",
+        description=f"El bot **{bot.user.name}** ha salido del servidor **{ctx.guild.name}** por decisión del propietario del bot.",
         color=0xFF0000
     )
     embed.set_footer(text="Gracias por usar Warzone Loadouts Stream")
 
     # Enviar el embed al canal donde se ejecutó el comando
     try:
-        await interaction.channel.send(embed=embed)
-        print(f"📨 Mensaje enviado al canal del servidor: {interaction.channel.name}")
+        await ctx.send(embed=embed)
+        print(f"📨 Mensaje enviado al canal del servidor: {ctx.channel.name}")
     except Exception as e:
         print(f"⚠️ No se pudo enviar el mensaje al canal: {e}")
 
     # 🚪 Salir del servidor
-    await interaction.guild.leave()
+    await ctx.guild.leave()
 
 async def main():
     await bot.load_extension("cogs.warzone")
     await bot.start(config.TOKEN)
 
 asyncio.run(main())
+
