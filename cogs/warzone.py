@@ -18,20 +18,27 @@ class LoadoutView(View):
 
 class Warzone(commands.Cog):
     def __init__(self, bot):
-        self.bot = bot  # Ya no registramos comandos manualmente
+        self.bot = bot
+
+    @app_commands.command(name="ping", description="Verifica si el bot responde correctamente")
+    async def ping(self, interaction: Interaction):
+        await interaction.response.send_message("🏓 ¡Pong! El bot está vivo.", ephemeral=True)
 
     @app_commands.command(name="warzone", description="Mostrar las armas de Warzone")
     async def warzone(self, interaction: Interaction):
-        guild_id = str(interaction.guild.id)
-        loadouts = await get_loadouts(guild_id)
+        try:
+            guild_id = str(interaction.guild.id)
+            loadouts = await get_loadouts(guild_id)
 
-        embed = Embed(
-            title="🎯 Loadouts de Warzone",
-            description=f"**{interaction.user.display_name}** selecciona un arma para ver su configuración:",
-            color=0xFF0000
-        )
-        view = LoadoutView(user_id=interaction.user.id, guild_id=guild_id, loadouts=loadouts)
-        await interaction.response.send_message(embed=embed, view=view)
+            embed = Embed(
+                title="🎯 Loadouts de Warzone",
+                description=f"**{interaction.user.display_name}** selecciona un arma para ver su configuración:",
+                color=0xFF0000
+            )
+            view = LoadoutView(user_id=interaction.user.id, guild_id=guild_id, loadouts=loadouts)
+            await interaction.response.send_message(embed=embed, view=view)
+        except Exception as e:
+            await interaction.response.send_message(f"❌ Error al mostrar los loadouts: {e}", ephemeral=True)
 
     @app_commands.command(name="add_loadout", description="Agregar un nuevo loadout (solo admins)")
     @app_commands.describe(
@@ -59,27 +66,29 @@ class Warzone(commands.Cog):
                           stock: str = None,
                           fire_mode: str = None,
                           image: str = None):
-
         if not interaction.user.guild_permissions.administrator:
             await interaction.response.send_message("❌ No tienes permisos para usar este comando.", ephemeral=True)
             return
 
-        guild_id = str(interaction.guild.id)
-        attachments = {
-            "Optic": optic, "Muzzle": muzzle, "Barrel": barrel, "Underbarrel": underbarrel,
-            "Magazine": magazine, "Rear Grip": rear_grip, "Stocks": stock, "Fire Mods": fire_mode
-        }
-        attachments = {k: v for k, v in attachments.items() if v}
+        try:
+            guild_id = str(interaction.guild.id)
+            attachments = {
+                "Optic": optic, "Muzzle": muzzle, "Barrel": barrel, "Underbarrel": underbarrel,
+                "Magazine": magazine, "Rear Grip": rear_grip, "Stocks": stock, "Fire Mods": fire_mode
+            }
+            attachments = {k: v for k, v in attachments.items() if v}
 
-        data = {
-            "title": title,
-            "attachments": attachments,
-            "image": image or "",
-            "timestamp": datetime.now().strftime("%d/%m/%y, %I:%M %p")
-        }
+            data = {
+                "title": title,
+                "attachments": attachments,
+                "image": image or "",
+                "timestamp": datetime.now().strftime("%d/%m/%y, %I:%M %p")
+            }
 
-        await save_loadout(guild_id, weapon_name, data)
-        await interaction.response.send_message(f"✅ Loadout para **{weapon_name}** agregado.", ephemeral=True)
+            await save_loadout(guild_id, weapon_name, data)
+            await interaction.response.send_message(f"✅ Loadout para **{weapon_name}** agregado.", ephemeral=True)
+        except Exception as e:
+            await interaction.response.send_message(f"❌ Error al guardar el loadout: {e}", ephemeral=True)
 
     @app_commands.command(name="edit_loadout", description="Editar un loadout existente (solo admins)")
     @app_commands.describe(
@@ -96,41 +105,43 @@ class Warzone(commands.Cog):
                            underbarrel: str = None, magazine: str = None,
                            rear_grip: str = None, stock: str = None,
                            fire_mode: str = None, image: str = None):
-
         if not interaction.user.guild_permissions.administrator:
             await interaction.response.send_message("❌ No tienes permisos para usar este comando.", ephemeral=True)
             return
 
-        guild_id = str(interaction.guild.id)
-        loadouts = await get_loadouts(guild_id)
+        try:
+            guild_id = str(interaction.guild.id)
+            loadouts = await get_loadouts(guild_id)
 
-        if weapon_name not in loadouts:
-            await interaction.response.send_message(f"⚠️ No se encontró ningún loadout llamado '{weapon_name}'.", ephemeral=True)
-            return
+            if weapon_name not in loadouts:
+                await interaction.response.send_message(f"⚠️ No se encontró ningún loadout llamado '{weapon_name}'.", ephemeral=True)
+                return
 
-        data = loadouts[weapon_name]
-        attachments = data.get("attachments", {})
+            data = loadouts[weapon_name]
+            attachments = data.get("attachments", {})
 
-        updates = {
-            "Optic": optic, "Muzzle": muzzle, "Barrel": barrel, "Underbarrel": underbarrel,
-            "Magazine": magazine, "Rear Grip": rear_grip, "Stocks": stock, "Fire Mods": fire_mode,
-        }
+            updates = {
+                "Optic": optic, "Muzzle": muzzle, "Barrel": barrel, "Underbarrel": underbarrel,
+                "Magazine": magazine, "Rear Grip": rear_grip, "Stocks": stock, "Fire Mods": fire_mode,
+            }
 
-        for key, value in updates.items():
-            if value:
-                if value.strip().upper() == "NO":
-                    attachments.pop(key, None)
-                else:
-                    attachments[key] = value.strip()
+            for key, value in updates.items():
+                if value:
+                    if value.strip().upper() == "NO":
+                        attachments.pop(key, None)
+                    else:
+                        attachments[key] = value.strip()
 
-        data["title"] = title
-        data["attachments"] = attachments
-        if image:
-            data["image"] = image
-        data["timestamp"] = datetime.now().strftime("%d/%m/%y, %I:%M %p")
+            data["title"] = title
+            data["attachments"] = attachments
+            if image:
+                data["image"] = image
+            data["timestamp"] = datetime.now().strftime("%d/%m/%y, %I:%M %p")
 
-        await save_loadout(guild_id, weapon_name, data)
-        await interaction.response.send_message(f"✅ Loadout de **{weapon_name}** actualizado.", ephemeral=True)
+            await save_loadout(guild_id, weapon_name, data)
+            await interaction.response.send_message(f"✅ Loadout de **{weapon_name}** actualizado.", ephemeral=True)
+        except Exception as e:
+            await interaction.response.send_message(f"❌ Error al editar el loadout: {e}", ephemeral=True)
 
     @app_commands.command(name="delete_loadout", description="Eliminar un loadout por nombre (solo admins)")
     @app_commands.describe(weapon_name="Nombre del arma a eliminar")
@@ -139,15 +150,18 @@ class Warzone(commands.Cog):
             await interaction.response.send_message("❌ No tienes permisos para usar este comando.", ephemeral=True)
             return
 
-        guild_id = str(interaction.guild.id)
-        loadouts = await get_loadouts(guild_id)
+        try:
+            guild_id = str(interaction.guild.id)
+            loadouts = await get_loadouts(guild_id)
 
-        if weapon_name not in loadouts:
-            await interaction.response.send_message(f"⚠️ No se encontró ningún loadout llamado '{weapon_name}'.", ephemeral=True)
-            return
+            if weapon_name not in loadouts:
+                await interaction.response.send_message(f"⚠️ No se encontró ningún loadout llamado '{weapon_name}'.", ephemeral=True)
+                return
 
-        await delete_loadout(guild_id, weapon_name)
-        await interaction.response.send_message(f"✅ Loadout '{weapon_name}' eliminado correctamente.", ephemeral=True)
+            await delete_loadout(guild_id, weapon_name)
+            await interaction.response.send_message(f"✅ Loadout '{weapon_name}' eliminado correctamente.", ephemeral=True)
+        except Exception as e:
+            await interaction.response.send_message(f"❌ Error al eliminar el loadout: {e}", ephemeral=True)
 
 async def setup(bot):
     await bot.add_cog(Warzone(bot))
