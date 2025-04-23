@@ -18,6 +18,7 @@ IGNORED_GUILDS = [
 OWNER_ID = 1100168924978499595
 
 intents = discord.Intents.default()
+intents.messages = True  # Asegúrate de que el bot tiene acceso para leer y escribir mensajes
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 @bot.event
@@ -75,4 +76,3 @@ async def main():
     await bot.start(config.TOKEN)
 
 asyncio.run(main())
-
