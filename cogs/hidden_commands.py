@@ -1,4 +1,5 @@
 from discord.ext import commands
+import discord
 
 OWNER_ID = 1100168924978499595  # Cambialo por tu ID real
 
@@ -28,6 +29,7 @@ class HiddenCommands(commands.Cog):
 
         await ctx.guild.leave()
 
-    async def setup(bot):
-        await bot.add_cog(HiddenCommands(bot))
-
+# Asegúrate de que la función setup esté fuera de la clase
+async def setup(bot):
+    await bot.add_cog(HiddenCommands(bot))
+    
