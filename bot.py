@@ -38,42 +38,21 @@ async def on_ready():
             await guild.leave()
 
     try:
+        # Limpieza de comandos viejos y sincronización
+        await bot.tree.clear_commands(guild=None)  # Limpia los globales
         synced = await bot.tree.sync()
-        print(f"🌐 Comandos slash sincronizados: {len(synced)}")
+        print(f"🧹 Comandos antiguos eliminados y nuevos sincronizados: {len(synced)}")
     except Exception as e:
-        print(f"❌ Error al sincronizar comandos: {e}")
+        print(f"❌ Error al limpiar/sincronizar comandos: {e}")
 
-# Comando SLASH /cerrar, solo lo podés usar vos
-@bot.tree.command(name="cerrar", description="Cerrar el bot (solo para el dueño)")
-async def cerrar(interaction: Interaction):
-    if interaction.user.id != OWNER_ID:
-        await interaction.response.send_message("❌ No tenés permiso para usar este comando.", ephemeral=True)
-        return
-
-    await interaction.response.send_message("👋 Cerrando sesión y saliendo del servidor...", ephemeral=True)
-
-    embed = Embed(
-        title="📤 El bot se ha retirado de tu servidor",
-        description=f"El bot **{bot.user.name}** ha salido del servidor **{interaction.guild.name}** por decisión del propietario del bot.",
-        color=0xFF0000
-    )
-    embed.set_footer(text="Gracias por usar Warzone Loadouts Stream")
-
-    try:
-        await interaction.channel.send(embed=embed)
-        print(f"📨 Mensaje enviado al canal: {interaction.channel.name}")
-    except Exception as e:
-        print(f"⚠️ No se pudo enviar mensaje al canal: {e}")
-
-    await interaction.guild.leave()
+# ✅ Comando /cerrar eliminado — ahora solo usás /off desde cogs.warzone
 
 # Inicia el bot
 async def main():
     try:
-        await bot.load_extension("cogs.warzone")  # ✅ Corregido (antes decía "cogs.warzone")
+        await bot.load_extension("cogs.warzone")  # Carga el cog correctamente
     except Exception as e:
         print(f"❌ Error al cargar la extensión warzone: {e}")
     await bot.start(config.TOKEN)
 
 asyncio.run(main())
-
