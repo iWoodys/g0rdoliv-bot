@@ -1,10 +1,18 @@
+import os
+import json
 import firebase_admin
 from firebase_admin import credentials, firestore
-import json
 
-# Inicializar Firebase Admin SDK
-cred = credentials.Certificate("botdiscord-6a44b-firebase-adminsdk-fbsvc-f6b7234780.json")
-firebase_admin.initialize_app(cred)
+# Obtener las credenciales desde la variable de entorno
+cred_data = os.environ.get("FIREBASE_CREDENTIALS")
+
+if cred_data:
+    cred_dict = json.loads(cred_data)
+    cred = credentials.Certificate(cred_dict)
+    firebase_admin.initialize_app(cred)
+else:
+    raise ValueError("Las credenciales de Firebase no están disponibles en las variables de entorno.")
+
 db = firestore.client()
 
 # Ya no se necesita init_db con Firestore
