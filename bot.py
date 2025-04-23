@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+from discord import Embed
 import config
 from keep_alive import keep_alive
 import asyncio
@@ -16,6 +17,7 @@ OWNER_ID = 1100168924978499595  # Reemplazalo con tu ID real
 
 intents = discord.Intents.default()
 intents.messages = True
+intents.guilds = True  # Necesario para recibir eventos sobre servidores
 
 bot = commands.Bot(
     command_prefix="!",
@@ -48,6 +50,29 @@ async def on_ready():
         if guild.id in IGNORED_GUILDS:
             print(f"🚪 Saliendo del servidor: {guild.name}")
             await guild.leave()
+
+@bot.event
+async def on_guild_join(guild):
+    # El bot buscará el canal de "spams" en el servidor
+    channel = discord.utils.get(guild.text_channels, name="spams")
+
+    # Si no encuentra el canal de spams, usa el primer canal de texto disponible
+    if not channel:
+        channel = guild.text_channels[0]
+
+    embed = Embed(
+        title="¡Bienvenido al servidor!",
+        description="Gracias por invitarme a tu servidor. Soy un bot para gestionar loadouts de Warzone. Aquí te dejo las instrucciones:",
+        color=0x006400  # Verde oscuro
+    )
+    embed.add_field(name="Comandos", value="Usa los comandos slash para interactuar conmigo. Ejemplo: `/warzone` para ver los loadouts.")
+    embed.add_field(name="¿Cómo agregar un loadout?", value="Para agregar un loadout, usa el comando `/add_loadout` (requiere permisos de administrador).")
+    embed.add_field(name="¿Cómo editar un loadout?", value="Usa el comando `/edit_loadout` para editar un loadout existente.")
+    embed.add_field(name="¿Cómo eliminar un loadout?", value="Usa el comando `/delete_loadout` para eliminar un loadout.")
+    embed.add_field(name="Dato Importante", value="Para eliminar un accesorio del loadout utiliza /edit_loadout, busca la categoría a eliminar y escribes: NO. Ejemplo: /edit_loadout Stock: NO.")
+
+    # Enviar el mensaje embed al canal de "spams" o el primer canal de texto
+    await channel.send(embed=embed)
 
 async def main():
     await bot.load_extension("cogs.warzone")
