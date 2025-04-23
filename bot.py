@@ -70,7 +70,7 @@ async def cerrar(interaction: Interaction):
 # Inicia el bot
 async def main():
     try:
-        await bot.load_extension("warzone")  # ✅ Corregido (antes decía "cogs.warzone")
+        await bot.load_extension("cogs.warzone")  # ✅ Corregido (antes decía "cogs.warzone")
     except Exception as e:
         print(f"❌ Error al cargar la extensión warzone: {e}")
     await bot.start(config.TOKEN)
