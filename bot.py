@@ -19,7 +19,7 @@ OWNER_ID = 1100168924978499595
 
 # Intents
 intents = discord.Intents.default()
-bot = commands.Bot(command_prefix="!", intents=intents)
+bot = commands.Bot(command_prefix=commands.when_mentioned, intents=intents)
 
 @bot.event
 async def on_ready():

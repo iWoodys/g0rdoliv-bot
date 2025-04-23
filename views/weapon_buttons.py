@@ -14,9 +14,9 @@ class WeaponButton(Button):
             return
 
         try:
-            embed = await generate_weapon_embed(self.guild_id, self.label)  # Ahora usamos await
-            await interaction.response.send_message(embed=embed, ephemeral=False)
+            await interaction.response.defer()  # <-- Esperamos antes de procesar
+            embed = await generate_weapon_embed(self.guild_id, self.label)
+            await interaction.followup.send(embed=embed, ephemeral=False)
         except Exception as e:
-            await interaction.response.send_message("❌ Error al mostrar el loadout.", ephemeral=True)
-
+            await interaction.followup.send("❌ Error al mostrar el loadout.", ephemeral=True)
 
