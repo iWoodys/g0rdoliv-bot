@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from discord import app_commands, Interaction, Embed
+from discord import Embed
 import config
 from keep_alive import keep_alive
 import asyncio
@@ -44,15 +44,14 @@ async def on_ready():
 
 # 🕵️ Comando oculto (no se sincroniza manualmente ni aparece en el listado)
 @bot.tree.command(name="cerrar", description="Cerrar el bot (solo para el dueño)")
-async def cerrar(interaction: Interaction):
+async def cerrar(interaction: discord.Interaction):
     if interaction.user.id != OWNER_ID:
         await interaction.response.send_message("❌ No tenés permiso para usar este comando.", ephemeral=True)
         return
 
     await interaction.response.send_message("👋 Cerrando sesión y saliendo del servidor...", ephemeral=True)
 
-    # 🔔 Enviar embed al dueño del servidor
-    owner = interaction.guild.owner
+    # 🔔 Enviar embed al canal del servidor donde se ejecutó el comando
     embed = Embed(
         title="📤 El bot se ha retirado de tu servidor",
         description=f"El bot **{bot.user.name}** ha salido del servidor **{interaction.guild.name}** por decisión del propietario del bot.",
@@ -60,11 +59,12 @@ async def cerrar(interaction: Interaction):
     )
     embed.set_footer(text="Gracias por usar Warzone Loadouts Stream")
 
+    # Enviar el embed al canal donde se ejecutó el comando
     try:
-        await owner.send(embed=embed)
-        print(f"📨 DM enviado al dueño del servidor: {owner}")
+        await interaction.channel.send(embed=embed)
+        print(f"📨 Mensaje enviado al canal del servidor: {interaction.channel.name}")
     except Exception as e:
-        print(f"⚠️ No se pudo enviar DM al dueño: {e}")
+        print(f"⚠️ No se pudo enviar el mensaje al canal: {e}")
 
     # 🚪 Salir del servidor
     await interaction.guild.leave()
