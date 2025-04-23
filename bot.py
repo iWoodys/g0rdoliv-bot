@@ -2,7 +2,6 @@ import discord
 from discord.ext import commands
 import config
 from keep_alive import keep_alive
-from database import init_db  # ← Nuevo: inicializa SQLite
 import asyncio
 
 # Inicia el servidor Flask apenas arranca el bot
@@ -43,7 +42,6 @@ async def on_ready():
         print(f"❌ Error al sincronizar comandos: {e}")
 
 async def main():
-    init_db()  # ← Este llamado crea la base si no existe
     await bot.load_extension("cogs.warzone")
     await bot.start(config.TOKEN)
 
