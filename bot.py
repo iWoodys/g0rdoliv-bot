@@ -8,17 +8,21 @@ import asyncio
 # Inicia el servidor Flask apenas arranca el bot
 keep_alive()
 
-# IDs de servidores donde se permite usar el comando !cerrar
+# IDs de servidores donde se permite usar el comando !cerrar (opcional)
 ALLOWED_GUILDS = [
-    # Agregá acá el ID del servidor donde está permitido, si querés limitarlo (opcional)
-    # 123456789012345678
+    # 123456789012345678,
 ]
 
-OWNER_ID = 1100168924978499595  # Reemplazá con tu ID real
+OWNER_ID = 1100168924978499595  # Reemplazalo con tu ID real
 
 intents = discord.Intents.default()
 intents.messages = True
-bot = commands.Bot(command_prefix="!", intents=intents)
+
+bot = commands.Bot(
+    command_prefix="!",
+    intents=intents,
+    application_id=config.APPLICATION_ID  # Necesario para que funcionen slash commands
+)
 
 @bot.event
 async def on_ready():
@@ -31,7 +35,6 @@ async def on_ready():
     for guild in bot.guilds:
         print(f"👉 {guild.name} (ID: {guild.id})")
 
-    # Si querés que se salga automáticamente de ciertos servers
     IGNORED_GUILDS = []
     for guild in bot.guilds:
         if guild.id in IGNORED_GUILDS:
@@ -40,14 +43,17 @@ async def on_ready():
 
     try:
         synced = await bot.tree.sync()
-        print(f"🌐 Comandos sincronizados: {len(synced)}")
+        print(f"🌐 Comandos slash sincronizados: {len(synced)}")
+        for cmd in synced:
+            print(f"🔹 /{cmd.name}")
     except Exception as e:
         print(f"❌ Error al sincronizar comandos: {e}")
 
-# 🕵️ Comando secreto: !cerrar (solo para el owner, opcionalmente restringido por servidor)
+# 🕵️ Comando clásico oculto: !cerrar (solo para OWNER_ID)
 @bot.command(name="cerrar")
 async def cerrar(ctx):
     if ctx.author.id != OWNER_ID:
+        print(f"❌ Intento no autorizado de {ctx.author} (ID: {ctx.author.id})")
         await ctx.send("❌ No tenés permiso para usar este comando.")
         return
 
@@ -66,16 +72,15 @@ async def cerrar(ctx):
 
     try:
         await ctx.send(embed=embed)
-        print(f"📨 Mensaje enviado al canal del servidor: {ctx.channel.name}")
+        print(f"📨 Embed enviado en {ctx.channel.name}")
     except Exception as e:
-        print(f"⚠️ No se pudo enviar el mensaje al canal: {e}")
+        print(f"⚠️ Error al enviar embed: {e}")
 
     await ctx.guild.leave()
 
 async def main():
     await bot.load_extension("cogs.warzone")
- # await bot.load_extension("cogs.hidden_commands")  # ✅ lo comentás o lo eliminás
- # Si tenés más comandos ocultos, los cargás acá
+    # await bot.load_extension("cogs.hidden_commands")  # solo si tenés otros cogs secretos
     await bot.start(config.TOKEN)
 
 asyncio.run(main())
