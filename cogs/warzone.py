@@ -171,10 +171,4 @@ class Warzone(commands.Cog):
         await interaction.response.send_message(f"✅ Loadout '{weapon_name}' eliminado correctamente.", ephemeral=True)
 
 async def setup(bot):
-    warzone_cog = Warzone(bot)
-    
-    # Agregá los comandos slash al árbol manualmente
-    for command in warzone_cog.__cog_app_commands__:
-        bot.tree.add_command(command)
-
-    await bot.add_cog(warzone_cog)
+    await bot.add_cog(Warzone(bot))
